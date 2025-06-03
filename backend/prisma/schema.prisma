@@ -1,0 +1,37 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "windows"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model AtivoFinanceiro {
+  id         Int         @id @default(autoincrement())
+  nome       String
+  valorAtual Float
+  alocacoes  Alocacao[]  @relation("AlocacaoAtivo")
+}
+
+model Cliente {
+  id         Int         @id @default(autoincrement())
+  nome       String
+  email      String      @unique
+  status     Boolean     @default(true)
+  criadoEm   DateTime    @default(now())
+  alocacoes  Alocacao[]  @relation("AlocacaoCliente")
+}
+
+model Alocacao {
+  id         Int              @id @default(autoincrement())
+  clienteId  Int
+  ativoId    Int
+  quantidade Int
+
+  cliente    Cliente          @relation("AlocacaoCliente", fields: [clienteId], references: [id], onDelete: Cascade)
+  ativo      AtivoFinanceiro  @relation("AlocacaoAtivo", fields: [ativoId], references: [id], onDelete: Cascade)
+}
+
+
